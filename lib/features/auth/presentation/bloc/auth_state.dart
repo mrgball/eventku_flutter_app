@@ -13,7 +13,7 @@ class AuthState extends Equatable with ErrorResponseState {
 
   const AuthState({
     this.status = BlocStatus.initial,
-    this.message = 'Undefined',
+    this.message = '',
     this.errMessage = const [],
     this.errorCode,
     this.user,

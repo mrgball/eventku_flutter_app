@@ -1,9 +1,11 @@
 import 'package:event_app/core/config/global.dart';
 import 'package:event_app/core/config/route.dart';
-import 'package:event_app/core/helper/storage_service.dart.dart';
+import 'package:event_app/core/helper/storage_service.dart';
+import 'package:event_app/core/shared/screen/splash_screen.dart';
 import 'package:event_app/core/utils/injector.dart';
 import 'package:event_app/features/auth/presentation/bloc/auth_bloc.dart';
 import 'package:event_app/features/auth/presentation/screen/login_screen.dart';
+import 'package:event_app/features/home/presentation/bloc/home_bloc.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -37,16 +39,18 @@ class MyApp extends StatefulWidget {
 }
 
 class _MyAppState extends State<MyApp> {
-  // This widget is the root of your application.
   @override
   Widget build(BuildContext context) {
     return MultiBlocProvider(
-      providers: [BlocProvider(create: (context) => AuthBloc())],
+      providers: [
+        BlocProvider(create: (context) => AuthBloc()),
+        BlocProvider(create: (context) => HomeBloc()),
+      ],
       child: ToastificationWrapper(
         child: MaterialApp(
           navigatorKey: gNavigatorKey,
           onGenerateRoute: MyRouter.generateRoute,
-          home: LoginScreen(),
+          home: SplashScreen(),
         ),
       ),
     );

@@ -1,8 +1,9 @@
 import 'dart:async';
 
+import 'package:event_app/core/config/constant.dart';
 import 'package:event_app/core/config/extension.dart';
 import 'package:event_app/core/config/global.dart';
-import 'package:event_app/core/helper/storage_service.dart.dart';
+import 'package:event_app/core/helper/storage_service.dart';
 import 'package:event_app/core/shared/mixin/error_response_state.dart';
 import 'package:event_app/core/shared/widget/custom_toast.dart';
 import 'package:event_app/core/utils/app_exceptions.dart';
@@ -25,6 +26,35 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
   AuthBloc() : super(AuthState()) {
     on<RegisterAccountEvent>(_onRegisterAccount);
     on<LoginAccountEvent>(_onLoginAccount);
+    on<CheckLoginStatusEvent>(_onCheckLoginStatus);
+  }
+
+  Future<void> _onCheckLoginStatus(
+    CheckLoginStatusEvent event,
+    Emitter<AuthState> emit,
+  ) async {
+    await Future.delayed(const Duration(seconds: 3));
+
+    final token = await _storageService.getAccessToken();
+    final user = await _storageService.getUser();
+
+    if (token != null && token.isNotEmpty && user != null) {
+      gUser = user;
+
+      emit(state.copyWith(status: BlocStatus.success, user: user));
+
+      Navigator.pushReplacementNamed(
+        gNavigatorKey.currentContext!,
+        Constant.routeHome,
+      );
+    } else {
+      emit(state.copyWith(status: BlocStatus.success, user: null));
+
+      Navigator.pushReplacementNamed(
+        gNavigatorKey.currentContext!,
+        Constant.routeLogin,
+      );
+    }
   }
 
   void _onLoginAccount(LoginAccountEvent event, Emitter<AuthState> emit) async {
@@ -46,6 +76,9 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
 
       // save refreshToken
       await _storageService.saveRefreshToken(response['refreshToken']);
+
+      //save user
+      await _storageService.saveUser(UserModel.fromJson(response['user']));
 
       // 2. Simpan user ke model (opsional, tergantung kamu pakai bloc/cubit/state mgmt apa)
       emit(state.copyWith(user: UserModel.fromJson(response['user'])));

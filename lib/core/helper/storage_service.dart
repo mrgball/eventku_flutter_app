@@ -1,3 +1,6 @@
+import 'dart:convert';
+
+import 'package:event_app/features/auth/data/model/user_model.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
@@ -16,6 +19,9 @@ class StorageService {
   static const String keyAccessToken = 'access_token';
   static const String keyRefreshToken = 'refresh_token';
   static const String keyIsDarkMode = 'is_dark_mode';
+
+  // Key untuk user
+  static const String keyUser = 'user';
 
   /// -------------------- SECURE STORAGE --------------------
 
@@ -43,6 +49,31 @@ class StorageService {
 
   Future<void> saveDarkMode(bool isDarkMode) async {
     await _prefs?.setBool(keyIsDarkMode, isDarkMode);
+  }
+
+  // Simpan user ke SharedPreferences
+  Future<void> saveUser(UserModel user) async {
+    final jsonString = jsonEncode(user.toJson());
+
+    await _prefs?.setString(keyUser, jsonString);
+  }
+
+  // Ambil user dari SharedPreferences
+  Future<UserModel?> getUser() async {
+    final jsonString = _prefs?.getString(keyUser);
+
+    if (jsonString == null) return null;
+
+    try {
+      return UserModel.fromJson(jsonDecode(jsonString));
+    } catch (e) {
+      return null;
+    }
+  }
+
+  // Hapus user dari SharedPreferences
+  Future<void> removeUser() async {
+    await _prefs?.remove(keyUser);
   }
 
   bool getDarkMode() {

@@ -41,3 +41,5 @@ class LoginAccountEvent extends AuthEvent {
   @override
   List<Object?> get props => [email, password];
 }
+
+class CheckLoginStatusEvent extends AuthEvent {}
