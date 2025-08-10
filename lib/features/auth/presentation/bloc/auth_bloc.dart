@@ -8,6 +8,7 @@ import 'package:event_app/core/shared/mixin/error_response_state.dart';
 import 'package:event_app/core/shared/widget/custom_toast.dart';
 import 'package:event_app/core/utils/app_exceptions.dart';
 import 'package:event_app/core/utils/injector.dart';
+import 'package:event_app/core/utils/token_utils.dart';
 import 'package:event_app/features/auth/data/model/user_model.dart';
 import 'package:event_app/features/auth/domain/entity/user.dart';
 import 'package:event_app/features/auth/domain/usecase/auth_usecase.dart';
@@ -38,7 +39,7 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
     final token = await _storageService.getAccessToken();
     final user = await _storageService.getUser();
 
-    if (token != null && token.isNotEmpty && user != null) {
+    if (!isTokenExpired(token) && user != null) {
       gUser = user;
 
       emit(state.copyWith(status: BlocStatus.success, user: user));

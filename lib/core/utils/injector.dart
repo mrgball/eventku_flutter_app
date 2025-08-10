@@ -32,4 +32,7 @@ void initInjector() async {
   locator.registerLazySingleton<FetchBannerUseCase>(
     () => FetchBannerUseCase(locator()),
   );
+  locator.registerLazySingleton<FetchPopularEventsUseCase>(
+    () => FetchPopularEventsUseCase(locator()),
+  );
 }

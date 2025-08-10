@@ -27,4 +27,24 @@ class HomeRepositoryImpl implements HomeRepository {
       rethrow;
     }
   }
+
+  @override
+  Future<List> fetchPopularEvents(Map<String, dynamic>? params) async {
+    try {
+      final response = await _dioHelper.getRequest(
+        '/api/v1/event',
+        queryParameters: params,
+      );
+
+      if (!(response.data['message'] as String).contains('Success')) {
+        throw DataException(message: response.data['message']);
+      }
+
+      return response.data['data'] ?? [];
+    } on DioException catch (e) {
+      throw ErrorParser().parseErrorResponse(e);
+    } catch (e) {
+      rethrow;
+    }
+  }
 }

@@ -11,3 +11,15 @@ class FetchBannerUseCase implements BaseUsecase<List, Map<String, dynamic>> {
     return _homeRepository.fetchBanner(params);
   }
 }
+
+class FetchPopularEventsUseCase
+    implements BaseUsecase<List, Map<String, dynamic>> {
+  final HomeRepository _homeRepository;
+
+  FetchPopularEventsUseCase(this._homeRepository);
+
+  @override
+  Future<List> call({Map<String, dynamic>? params}) {
+    return _homeRepository.fetchPopularEvents(params);
+  }
+}

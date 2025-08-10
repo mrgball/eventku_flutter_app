@@ -11,8 +11,27 @@ class FetchBannerEvent extends HomeEvent {
   final bool isRefresh;
   final User? user;
 
-  const FetchBannerEvent({this.isRefresh = false, this.user});
+  const FetchBannerEvent({this.isRefresh = false, required this.user});
 
   @override
   List<Object?> get props => [isRefresh, user];
+}
+
+class FetchPopularEvent extends HomeEvent {
+  final bool isRefresh;
+  final User? user;
+
+  const FetchPopularEvent({this.isRefresh = false, required this.user});
+
+  @override
+  List<Object?> get props => [isRefresh, user];
+}
+
+class FetchHomeEndpointEvent extends HomeEvent {
+  final User? user;
+
+  const FetchHomeEndpointEvent({required this.user});
+
+  @override
+  List<Object?> get props => [user];
 }

@@ -1,6 +1,7 @@
 import 'package:carousel_slider/carousel_slider.dart';
 import 'package:event_app/core/config/extension.dart';
 import 'package:event_app/features/auth/presentation/bloc/auth_bloc.dart';
+import 'package:event_app/features/event/domain/entity/event.dart';
 import 'package:event_app/features/home/presentation/bloc/home_bloc.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -18,39 +19,113 @@ class _HomeScreenState extends State<HomeScreen> {
 
   @override
   void initState() {
-    context.read<HomeBloc>().add(FetchBannerEvent());
     super.initState();
+
+    context.read<HomeBloc>().add(
+      FetchHomeEndpointEvent(user: _authBloc.state.user),
+    );
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: BlocSelector<HomeBloc, HomeState, HomeState>(
-        selector: (state) => state,
-        builder: (context, state) {
-          return SafeArea(
-            child: Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 24),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  const SizedBox(height: 16),
-                  _buildAppBar(),
-                  const SizedBox(height: 32),
-                  _buildCarouselSlider(state),
-                  const SizedBox(height: 24),
-                  Center(
-                    child: Text(
-                      _authBloc.state.user?.email ?? '',
-                      style: context.text.headlineLarge,
-                    ),
-                  ),
-                ],
+      body: SafeArea(
+        child: BlocSelector<HomeBloc, HomeState, HomeState>(
+          selector: (state) => state,
+          builder: (context, state) {
+            return SingleChildScrollView(
+              child: Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 24),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    const SizedBox(height: 16),
+                    _buildAppBar(),
+                    const SizedBox(height: 32),
+                    _buildCarouselSlider(state),
+                    const SizedBox(height: 24),
+                    ..._buildPopularEvents(state.listPopularEvent),
+                  ],
+                ),
               ),
-            ),
-          );
-        },
+            );
+          },
+        ),
       ),
+    );
+  }
+
+  List<Widget> _buildPopularEvents(List<Event> listEvent) {
+    return [
+      Text(
+        'Popular Events',
+        style: context.text.titleLarge?.copyWith(fontWeight: FontWeight.bold),
+      ),
+      SizedBox(height: 16),
+      GridView.builder(
+        padding: EdgeInsets.zero,
+        shrinkWrap: true,
+        itemCount: listEvent.take(6).length,
+        physics: NeverScrollableScrollPhysics(),
+        gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+          crossAxisCount: 2,
+          crossAxisSpacing: 16,
+          mainAxisSpacing: 16,
+          childAspectRatio: 0.65,
+        ),
+        itemBuilder: (context, index) => _buildEventItem(listEvent[index]),
+      ),
+      SizedBox(height: 16),
+    ];
+  }
+
+  Widget _buildEventItem(Event event) {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Container(
+          decoration: BoxDecoration(
+            color: Colors.white,
+            border: Border.all(
+              color: Colors.grey.shade200,
+              width: 1.5,
+              style: BorderStyle.solid,
+            ),
+            borderRadius: BorderRadius.circular(4),
+            boxShadow: [
+              BoxShadow(
+                color: Colors.black.withOpacity(0.05),
+                blurRadius: 6,
+                offset: const Offset(0, 8),
+              ),
+            ],
+          ),
+          child: ClipRRect(
+            borderRadius: const BorderRadius.vertical(
+              top: Radius.circular(4),
+              bottom: Radius.circular(4),
+            ),
+            child: Image.network(
+              event.banner,
+              height: context.dh * 0.24,
+              width: double.infinity,
+              fit: BoxFit.cover,
+            ),
+          ),
+        ),
+        const SizedBox(height: 8),
+        SizedBox(
+          child: Text(
+            event.name,
+            style: context.text.bodyMedium?.copyWith(
+              fontWeight: FontWeight.bold,
+            ),
+            maxLines: 2,
+            overflow: TextOverflow.ellipsis,
+          ),
+        ),
+        const SizedBox(height: 8),
+      ],
     );
   }
 
