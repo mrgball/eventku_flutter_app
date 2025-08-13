@@ -51,6 +51,17 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
     } else {
       emit(state.copyWith(status: BlocStatus.success, user: null));
 
+      final message =
+          isTokenExpired(token)
+              ? 'Sesi Anda telah berakhir, silakan login kembali.'
+              : 'Anda belum login.';
+
+      showToast(
+        context: gNavigatorKey.currentContext!,
+        message: message,
+        type: ToastificationType.error,
+      );
+
       Navigator.pushReplacementNamed(
         gNavigatorKey.currentContext!,
         Constant.routeLogin,

@@ -91,3 +91,18 @@ extension FlashDialogExtension on BuildContext {
     });
   }
 }
+
+extension CurrencyExtension on num {
+  String get displayRupiah {
+    final str = toStringAsFixed(0);
+    final buffer = StringBuffer();
+    final reversed = str.split('').reversed.toList();
+
+    for (var i = 0; i < reversed.length; i++) {
+      if (i != 0 && i % 3 == 0) buffer.write('.');
+      buffer.write(reversed[i]);
+    }
+
+    return 'Rp ${buffer.toString().split('').reversed.join()}';
+  }
+}

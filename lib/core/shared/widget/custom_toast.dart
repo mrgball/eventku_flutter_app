@@ -7,7 +7,7 @@ void showToast({
   required String message,
   ToastificationType type = ToastificationType.info,
   Duration duration = const Duration(seconds: 4),
-  ToastificationStyle style = ToastificationStyle.minimal,
+  ToastificationStyle style = ToastificationStyle.flatColored,
 }) {
   toastification.show(
     context: context,

@@ -1,4 +1,5 @@
 import 'package:carousel_slider/carousel_slider.dart';
+import 'package:event_app/core/config/constant.dart';
 import 'package:event_app/core/config/extension.dart';
 import 'package:event_app/features/auth/presentation/bloc/auth_bloc.dart';
 import 'package:event_app/features/event/domain/entity/event.dart';
@@ -29,6 +30,27 @@ class _HomeScreenState extends State<HomeScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      bottomNavigationBar: BottomNavigationBar(
+        items: const [
+          BottomNavigationBarItem(icon: Icon(Icons.home), label: 'Home'),
+          BottomNavigationBarItem(
+            icon: Icon(Icons.abc_sharp),
+            label: 'ABC Sharp',
+          ),
+          BottomNavigationBarItem(
+            icon: Icon(Icons.zoom_out_rounded),
+            label: 'Zoom Out',
+          ),
+          BottomNavigationBarItem(icon: Icon(Icons.settings), label: 'Profile'),
+        ],
+        currentIndex: 0, // indeks yang sedang aktif
+        selectedItemColor: Colors.blue,
+        unselectedItemColor: Colors.grey,
+        onTap: (index) {
+          // fungsi saat icon ditekan, misal update state
+        },
+      ),
+
       body: SafeArea(
         child: BlocSelector<HomeBloc, HomeState, HomeState>(
           selector: (state) => state,
@@ -57,9 +79,23 @@ class _HomeScreenState extends State<HomeScreen> {
 
   List<Widget> _buildPopularEvents(List<Event> listEvent) {
     return [
-      Text(
-        'Popular Events',
-        style: context.text.titleLarge?.copyWith(fontWeight: FontWeight.bold),
+      Row(
+        crossAxisAlignment: CrossAxisAlignment.end,
+        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+        children: [
+          Text(
+            'Popular Events',
+            style: context.text.titleLarge?.copyWith(
+              fontWeight: FontWeight.bold,
+            ),
+          ),
+          Text(
+            'See more',
+            style: context.text.bodySmall?.copyWith(
+              color: context.disableColor,
+            ),
+          ),
+        ],
       ),
       SizedBox(height: 16),
       GridView.builder(
@@ -80,52 +116,58 @@ class _HomeScreenState extends State<HomeScreen> {
   }
 
   Widget _buildEventItem(Event event) {
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        Container(
-          decoration: BoxDecoration(
-            color: Colors.white,
-            border: Border.all(
-              color: Colors.grey.shade200,
-              width: 1.5,
-              style: BorderStyle.solid,
-            ),
-            borderRadius: BorderRadius.circular(4),
-            boxShadow: [
-              BoxShadow(
-                color: Colors.black.withOpacity(0.05),
-                blurRadius: 6,
-                offset: const Offset(0, 8),
+    return GestureDetector(
+      onTap:
+          () => Navigator.of(
+            context,
+          ).pushNamed(Constant.routeEventDetail, arguments: {'event': event}),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Container(
+            decoration: BoxDecoration(
+              color: Colors.white,
+              border: Border.all(
+                color: Colors.grey.shade200,
+                width: 1.5,
+                style: BorderStyle.solid,
               ),
-            ],
-          ),
-          child: ClipRRect(
-            borderRadius: const BorderRadius.vertical(
-              top: Radius.circular(4),
-              bottom: Radius.circular(4),
+              borderRadius: BorderRadius.circular(4),
+              boxShadow: [
+                BoxShadow(
+                  color: Colors.black.withOpacity(0.05),
+                  blurRadius: 6,
+                  offset: const Offset(0, 8),
+                ),
+              ],
             ),
-            child: Image.network(
-              event.banner,
-              height: context.dh * 0.24,
-              width: double.infinity,
-              fit: BoxFit.cover,
+            child: ClipRRect(
+              borderRadius: const BorderRadius.vertical(
+                top: Radius.circular(4),
+                bottom: Radius.circular(4),
+              ),
+              child: Image.network(
+                event.banner,
+                height: context.dh * 0.24,
+                width: double.infinity,
+                fit: BoxFit.cover,
+              ),
             ),
           ),
-        ),
-        const SizedBox(height: 8),
-        SizedBox(
-          child: Text(
-            event.name,
-            style: context.text.bodyMedium?.copyWith(
-              fontWeight: FontWeight.bold,
+          const SizedBox(height: 8),
+          SizedBox(
+            child: Text(
+              event.name,
+              style: context.text.bodyMedium?.copyWith(
+                fontWeight: FontWeight.bold,
+              ),
+              maxLines: 2,
+              overflow: TextOverflow.ellipsis,
             ),
-            maxLines: 2,
-            overflow: TextOverflow.ellipsis,
           ),
-        ),
-        const SizedBox(height: 8),
-      ],
+          const SizedBox(height: 8),
+        ],
+      ),
     );
   }
 
@@ -150,13 +192,11 @@ class _HomeScreenState extends State<HomeScreen> {
             ),
           ],
         ),
-        Material(
-          shape: const CircleBorder(),
-          color: context.primaryColor.withOpacity(0.6),
-          child: IconButton(
-            onPressed: () {},
-            icon: const Icon(Icons.settings, size: 20, color: Colors.white),
-          ),
+
+        /// TODO: TEMPORARY HARDCODE
+        CircleAvatar(
+          radius: 24,
+          backgroundImage: NetworkImage('https://i.pravatar.cc/150?img=3'),
         ),
       ],
     );
