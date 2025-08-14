@@ -43,6 +43,7 @@ class CustomTextFormField extends StatelessWidget {
           valueListenable: obscureNotifier,
           builder: (context, obscure, _) {
             return TextFormField(
+              autocorrect: false,
               controller: controller,
               style: context.text.bodyMedium?.copyWith(
                 color: context.onBackground,

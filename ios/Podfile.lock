@@ -4,6 +4,15 @@ PODS:
   - Flutter (1.0.0)
   - flutter_secure_storage (6.0.0):
     - Flutter
+  - midtrans_sdk (1.0.1):
+    - Flutter
+    - MidtransKit (= 1.28.0)
+  - MidtransCoreKit (1.28.0)
+  - MidtransKit (1.28.0):
+    - MidtransCoreKit (= 1.28.0)
+    - MidtransKit/UI (= 1.28.0)
+  - MidtransKit/UI (1.28.0):
+    - MidtransCoreKit (= 1.28.0)
   - path_provider_foundation (0.0.1):
     - Flutter
     - FlutterMacOS
@@ -19,10 +28,16 @@ DEPENDENCIES:
   - connectivity_plus (from `.symlinks/plugins/connectivity_plus/ios`)
   - Flutter (from `Flutter`)
   - flutter_secure_storage (from `.symlinks/plugins/flutter_secure_storage/ios`)
+  - midtrans_sdk (from `.symlinks/plugins/midtrans_sdk/ios`)
+  - MidtransKit (from `https://github.com/veritrans/veritrans-ios-sdk.git`, tag `1.28.0`)
   - path_provider_foundation (from `.symlinks/plugins/path_provider_foundation/darwin`)
   - sensors_plus (from `.symlinks/plugins/sensors_plus/ios`)
   - share_plus (from `.symlinks/plugins/share_plus/ios`)
   - shared_preferences_foundation (from `.symlinks/plugins/shared_preferences_foundation/darwin`)
+
+SPEC REPOS:
+  trunk:
+    - MidtransCoreKit
 
 EXTERNAL SOURCES:
   connectivity_plus:
@@ -31,6 +46,11 @@ EXTERNAL SOURCES:
     :path: Flutter
   flutter_secure_storage:
     :path: ".symlinks/plugins/flutter_secure_storage/ios"
+  midtrans_sdk:
+    :path: ".symlinks/plugins/midtrans_sdk/ios"
+  MidtransKit:
+    :git: https://github.com/veritrans/veritrans-ios-sdk.git
+    :tag: 1.28.0
   path_provider_foundation:
     :path: ".symlinks/plugins/path_provider_foundation/darwin"
   sensors_plus:
@@ -40,15 +60,23 @@ EXTERNAL SOURCES:
   shared_preferences_foundation:
     :path: ".symlinks/plugins/shared_preferences_foundation/darwin"
 
+CHECKOUT OPTIONS:
+  MidtransKit:
+    :git: https://github.com/veritrans/veritrans-ios-sdk.git
+    :tag: 1.28.0
+
 SPEC CHECKSUMS:
   connectivity_plus: 2a701ffec2c0ae28a48cf7540e279787e77c447d
   Flutter: e0871f40cf51350855a761d2e70bf5af5b9b5de7
   flutter_secure_storage: d33dac7ae2ea08509be337e775f6b59f1ff45f12
+  midtrans_sdk: 0d952f62456d8e3082013c91176e217c19891289
+  MidtransCoreKit: 255d2ea732aa8e29915fc69f9c9b3d5113abdc9d
+  MidtransKit: 4210fe50ac0be7306632baa01fb70ea344004257
   path_provider_foundation: 2b6b4c569c0fb62ec74538f866245ac84301af46
   sensors_plus: 7229095999f30740798f0eeef5cd120357a8f4f2
   share_plus: 8b6f8b3447e494cca5317c8c3073de39b3600d1f
   shared_preferences_foundation: fcdcbc04712aee1108ac7fda236f363274528f78
 
-PODFILE CHECKSUM: 4305caec6b40dde0ae97be1573c53de1882a07e5
+PODFILE CHECKSUM: c22ce6e9f677dd87934036098b0afea487340962
 
 COCOAPODS: 1.16.2

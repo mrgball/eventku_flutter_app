@@ -14,11 +14,11 @@ import 'package:toastification/toastification.dart';
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
 
+  gNavigatorKey = GlobalKey<NavigatorState>();
+
   await StorageService.init();
 
   initInjector();
-
-  gNavigatorKey = GlobalKey<NavigatorState>();
 
   runApp(
     RequestsInspector(
