@@ -73,6 +73,12 @@ class _LoginScreenState extends State<LoginScreen> {
                       return 'Password must be at least 6 characters';
                     }
 
+                    final regex = RegExp(r'^(?=.*[A-Z]).*$');
+
+                    if (!regex.hasMatch(value)) {
+                      return 'Password must contain at least 1 uppercase letter';
+                    }
+
                     return null;
                   },
                 ),

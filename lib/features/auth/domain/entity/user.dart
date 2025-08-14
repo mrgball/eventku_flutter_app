@@ -21,19 +21,6 @@ class User {
     required this.role,
   });
 
-  factory User.fromJson(Map<String, dynamic> json) {
-    return User(
-      id: json['id'],
-      fullname: json['fullname'],
-      email: json['email'],
-      isEmailVerified: json['isEmailVerified'] == true,
-      createdAt: DateTime.parse(json['createdAt']),
-      updatedAt: DateTime.parse(json['updatedAt']),
-      userPreferences: UserPreferences.fromJson(json['userPreferences']),
-      role: json['role'],
-    );
-  }
-
   Map<String, dynamic> toJson() {
     return {
       'id': id,

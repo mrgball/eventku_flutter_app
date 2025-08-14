@@ -4,4 +4,5 @@ class Constant {
   static const String routeHome = '/home';
   static const String routeEvent = '/event';
   static const String routeEventDetail = '/detail-event';
+  static const String routePayment = '/payment';
 }

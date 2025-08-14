@@ -5,6 +5,7 @@ import 'package:event_app/core/shared/screen/splash_screen.dart';
 import 'package:event_app/core/utils/injector.dart';
 import 'package:event_app/features/auth/presentation/bloc/auth_bloc.dart';
 import 'package:event_app/features/home/presentation/bloc/home_bloc.dart';
+import 'package:event_app/features/payment/presentation/bloc/payment_bloc.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -44,6 +45,7 @@ class _MyAppState extends State<MyApp> {
       providers: [
         BlocProvider(create: (context) => AuthBloc()),
         BlocProvider(create: (context) => HomeBloc()),
+        BlocProvider(create: (context) => PaymentBloc()),
       ],
       child: ToastificationWrapper(
         child: MaterialApp(

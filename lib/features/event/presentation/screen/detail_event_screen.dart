@@ -1,3 +1,4 @@
+import 'package:event_app/core/config/constant.dart';
 import 'package:event_app/core/config/extension.dart';
 import 'package:event_app/features/event/domain/entity/event.dart';
 import 'package:event_app/features/event/domain/entity/ticket.dart';
@@ -125,7 +126,11 @@ class _DetailEventScreenState extends State<DetailEventScreen> {
                 ),
               ),
               OutlinedButton(
-                onPressed: () {},
+                onPressed:
+                    () => Navigator.of(context).pushNamed(
+                      Constant.routePayment,
+                      arguments: {'ticket': ticket},
+                    ),
                 style: OutlinedButton.styleFrom(
                   padding: const EdgeInsets.symmetric(
                     horizontal: 16,

@@ -6,13 +6,20 @@ import 'package:event_app/features/auth/domain/usecase/auth_usecase.dart';
 import 'package:event_app/features/home/data/repository/home_repository_impl.dart';
 import 'package:event_app/features/home/domain/repository/home_repository.dart';
 import 'package:event_app/features/home/domain/usecase/home_usecase.dart';
+import 'package:event_app/features/payment/data/repository/payment_repository_impl.dart';
+import 'package:event_app/features/payment/domain/repository/payment_repository.dart';
+import 'package:event_app/features/payment/domain/usecase/payment_usecase.dart';
 import 'package:get_it/get_it.dart';
 
 final GetIt locator = GetIt.instance;
 
 void initInjector() async {
+  locator.registerSingleton<DioHelper>(DioHelper(isTransaction: false));
+
+  // Base URL khusus transaksi Midtrans
   locator.registerSingleton<DioHelper>(
-    DioHelper(baseUrl: String.fromEnvironment('BASE_URL_PROD')),
+    DioHelper(isTransaction: true),
+    instanceName: "transaction",
   );
 
   // initialize storage service
@@ -21,6 +28,9 @@ void initInjector() async {
   //REPOSITORY
   locator.registerLazySingleton<AuthRepository>(() => AuthRepositoryImpl());
   locator.registerLazySingleton<HomeRepository>(() => HomeRepositoryImpl());
+  locator.registerLazySingleton<PaymentRepository>(
+    () => PaymentRepositoryImpl(),
+  );
 
   //USECASE
   locator.registerLazySingleton<RegisterAccountUseCase>(
@@ -34,5 +44,8 @@ void initInjector() async {
   );
   locator.registerLazySingleton<FetchPopularEventsUseCase>(
     () => FetchPopularEventsUseCase(locator()),
+  );
+  locator.registerLazySingleton<CreateOrderUseCase>(
+    () => CreateOrderUseCase(locator()),
   );
 }

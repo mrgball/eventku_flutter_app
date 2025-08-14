@@ -67,4 +67,28 @@ class EventModel extends Event {
       totalAudience: json['totalAudience'],
     );
   }
+
+  Map<String, dynamic> toJson() {
+    return {
+      "id": id,
+      "name": name,
+      "startDate": startDate,
+      "endDate": endDate,
+      "description": description,
+      "banner": banner,
+      "isFeatured": isFeatured,
+      "isOnline": isOnline,
+      "isPublished": isPublished,
+      "slug": slug,
+      "address": address,
+      "longitude": longitude,
+      "latitude": latitude,
+      "createById": createById,
+      "updatedById": updatedById,
+      "categoryId": categoryId,
+      "regionId": regionId,
+      "createdAt": createdAt.toIso8601String(),
+      "updatedAt": updatedAt.toIso8601String(),
+    };
+  }
 }

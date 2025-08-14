@@ -1,5 +1,5 @@
+import 'package:event_app/features/auth/data/model/user_preferences_model.dart';
 import 'package:event_app/features/auth/domain/entity/user.dart';
-import 'package:event_app/features/auth/domain/entity/user_preferences.dart';
 
 class UserModel extends User {
   UserModel({
@@ -26,7 +26,7 @@ class UserModel extends User {
         (json['updatedAt'] == null)
             ? DateTime.now()
             : DateTime.parse(json['updatedAt']),
-    userPreferences: UserPreferences.fromJson(json['userPreferences']),
+    userPreferences: UserPreferencesModel.fromJson(json['userPreferences']),
     role: json['role'] ?? '',
   );
 }

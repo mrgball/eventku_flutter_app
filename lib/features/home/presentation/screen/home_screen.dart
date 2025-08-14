@@ -31,6 +31,7 @@ class _HomeScreenState extends State<HomeScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       bottomNavigationBar: BottomNavigationBar(
+        type: BottomNavigationBarType.fixed,
         items: const [
           BottomNavigationBarItem(icon: Icon(Icons.home), label: 'Home'),
           BottomNavigationBarItem(
@@ -193,10 +194,20 @@ class _HomeScreenState extends State<HomeScreen> {
           ],
         ),
 
-        /// TODO: TEMPORARY HARDCODE
-        CircleAvatar(
-          radius: 24,
-          backgroundImage: NetworkImage('https://i.pravatar.cc/150?img=3'),
+        Image.network(
+          'https://avatar.iran.liara.run/public/girl',
+          width: 50,
+          height: 50,
+          fit: BoxFit.cover,
+          alignment: Alignment.center,
+          errorBuilder: (context, error, stackTrace) {
+            return Container(
+              width: 50,
+              height: 50,
+              color: Colors.grey[200],
+              child: const Icon(Icons.person, color: Colors.grey),
+            );
+          },
         ),
       ],
     );

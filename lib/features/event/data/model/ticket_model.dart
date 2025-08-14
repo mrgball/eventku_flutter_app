@@ -28,4 +28,19 @@ class TicketModel extends Ticket {
       updatedAt: DateTime.parse(json['updatedAt']),
     );
   }
+
+  Map<String, dynamic> toJson() {
+    return {
+      "id": id,
+      "name": name,
+      "price": price,
+      "description": description,
+      "quantity": quantity,
+      "createById": createById,
+      "updatedById": updatedById,
+      "eventId": eventId,
+      "createdAt": createdAt.toIso8601String(),
+      "updatedAt": updatedAt.toIso8601String(),
+    };
+  }
 }

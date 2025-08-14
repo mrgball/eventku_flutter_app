@@ -13,15 +13,7 @@ class UserPreferences {
     required this.userId,
   });
 
-  factory UserPreferences.fromJson(Map<String, dynamic> json) {
-    return UserPreferences(
-      id: json['id'],
-      enable2FA: json['enable2FA'] == true,
-      emailNotification: json['emailNotification'] == true,
-      twoFactorSecret: json['twoFactorSecret'],
-      userId: json['userId'],
-    );
-  }
+
 
   Map<String, dynamic> toJson() {
     return {
