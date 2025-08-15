@@ -3,6 +3,7 @@ import 'package:event_app/core/config/extension.dart';
 import 'package:event_app/features/event/domain/entity/event.dart';
 import 'package:event_app/features/event/domain/entity/ticket.dart';
 import 'package:event_app/features/event/presentation/widget/ticket_container.dart';
+import 'package:event_app/features/payment/domain/entity/order.dart';
 import 'package:flutter/material.dart';
 
 class DetailEventScreen extends StatefulWidget {
@@ -20,7 +21,7 @@ class _DetailEventScreenState extends State<DetailEventScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Colors.grey.shade100,
+      backgroundColor: Colors.blueGrey.shade50,
       body: SingleChildScrollView(
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
@@ -128,8 +129,14 @@ class _DetailEventScreenState extends State<DetailEventScreen> {
               OutlinedButton(
                 onPressed:
                     () => Navigator.of(context).pushNamed(
-                      Constant.routePayment,
-                      arguments: {'ticket': ticket},
+                      Constant.routeOrderSummary,
+                      arguments: {
+                        'order': Order(
+                          event: widget.event,
+                          ticket: ticket,
+                          quantity: 1,
+                        ),
+                      },
                     ),
                 style: OutlinedButton.styleFrom(
                   padding: const EdgeInsets.symmetric(

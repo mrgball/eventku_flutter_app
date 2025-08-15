@@ -6,6 +6,7 @@ import 'package:event_app/core/config/global.dart';
 import 'package:event_app/core/shared/widget/custom_toast.dart';
 import 'package:event_app/core/utils/app_exceptions.dart';
 import 'package:event_app/core/utils/injector.dart';
+import 'package:event_app/features/payment/data/dto/create_order_dto.dart';
 import 'package:event_app/features/payment/domain/usecase/payment_usecase.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -34,13 +35,16 @@ class PaymentBloc extends Bloc<PaymentEvent, PaymentState> {
       emit(state.copyWith(orderStatus: BlocStatus.loading));
 
       final response = await locator<CreateOrderUseCase>().call(
-        params: [
-          {
-            'eventId': event.idEvent,
-            'quantity': event.qty,
-            'ticketId': event.idTicket,
-          },
-        ],
+        params:
+            event.orders
+                .map(
+                  (o) => {
+                    'eventId': o.idEvent,
+                    'quantity': o.qty,
+                    'ticketId': o.idTicket,
+                  },
+                )
+                .toList(),
       );
 
       if (response.isEmpty) {

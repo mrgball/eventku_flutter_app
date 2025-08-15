@@ -8,18 +8,12 @@ class PaymentEvent extends Equatable {
 }
 
 class CreateOrderEvent extends PaymentEvent {
-  final String idEvent;
-  final int qty;
-  final String idTicket;
+  final List<CreateOrderDto> orders;
 
-  const CreateOrderEvent({
-    required this.idEvent,
-    required this.idTicket,
-    required this.qty,
-  });
+  const CreateOrderEvent({required this.orders});
 
   @override
-  List<Object?> get props => [idEvent, qty, idTicket];
+  List<Object?> get props => [orders];
 }
 
 class StartPaymentEvent extends PaymentEvent {

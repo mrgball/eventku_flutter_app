@@ -5,7 +5,7 @@ import 'package:event_app/features/auth/presentation/screen/register_screen.dart
 import 'package:event_app/features/event/presentation/screen/detail_event_screen.dart';
 import 'package:event_app/features/event/presentation/screen/event_screen.dart';
 import 'package:event_app/features/home/presentation/screen/home_screen.dart';
-import 'package:event_app/features/payment/presentation/screen/payment_screen.dart';
+import 'package:event_app/features/payment/presentation/screen/order_summary_screen.dart';
 import 'package:flutter/material.dart';
 
 class MyRouter {
@@ -34,8 +34,8 @@ class MyRouter {
       case Constant.routeEventDetail:
         screenTujuan = (_) => DetailEventScreen(event: arguments?['event']);
         break;
-      case Constant.routePayment:
-        screenTujuan = (_) => PaymentScreen(ticket: arguments?['ticket']);
+      case Constant.routeOrderSummary:
+        screenTujuan = (_) => OrderSummary(order: arguments?['order']);
         break;
       default:
         screenTujuan = (_) => LoginScreen();

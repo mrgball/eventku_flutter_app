@@ -38,8 +38,10 @@ dependencies:
   flutter_secure_storage: ^9.2.4
   get_it: ^8.2.0
   midtrans_sdk: ^1.0.1
+  pull_to_refresh: ^2.0.0
   requests_inspector: ^5.0.2
   shared_preferences: ^2.5.3
+  shimmer_widget: ^1.0.0
   toastification: ^3.0.3
 
 dev_dependencies:
