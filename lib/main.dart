@@ -1,9 +1,11 @@
 import 'package:event_app/core/config/global.dart';
 import 'package:event_app/core/config/route.dart';
+import 'package:event_app/core/helper/cart_service.dart';
 import 'package:event_app/core/helper/storage_service.dart';
 import 'package:event_app/core/shared/screen/splash_screen.dart';
 import 'package:event_app/core/utils/injector.dart';
 import 'package:event_app/features/auth/presentation/bloc/auth_bloc.dart';
+import 'package:event_app/features/cart/presentation/bloc/cart_bloc.dart';
 import 'package:event_app/features/home/presentation/bloc/home_bloc.dart';
 import 'package:event_app/features/payment/presentation/bloc/payment_bloc.dart';
 import 'package:flutter/foundation.dart';
@@ -19,15 +21,12 @@ void main() async {
 
   await StorageService.init();
 
+  await CartService().database;
+
   initInjector();
 
   runApp(
-    RequestsInspector(
-      enabled: kDebugMode,
-      showInspectorOn: ShowInspectorOn.Both,
-      navigatorKey: null,
-      child: MyApp(),
-    ),
+    RequestsInspector(enabled: kDebugMode, showInspectorOn: ShowInspectorOn.Both, navigatorKey: null, child: MyApp()),
   );
 }
 
@@ -46,13 +45,10 @@ class _MyAppState extends State<MyApp> {
         BlocProvider(create: (context) => AuthBloc()),
         BlocProvider(create: (context) => HomeBloc()),
         BlocProvider(create: (context) => PaymentBloc()),
+        BlocProvider(create: (context) => CartBloc()),
       ],
       child: ToastificationWrapper(
-        child: MaterialApp(
-          navigatorKey: gNavigatorKey,
-          onGenerateRoute: MyRouter.generateRoute,
-          home: SplashScreen(),
-        ),
+        child: MaterialApp(navigatorKey: gNavigatorKey, onGenerateRoute: MyRouter.generateRoute, home: SplashScreen()),
       ),
     );
   }

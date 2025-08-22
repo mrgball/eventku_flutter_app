@@ -2,6 +2,7 @@ import 'package:carousel_slider/carousel_slider.dart';
 import 'package:event_app/core/config/constant.dart';
 import 'package:event_app/core/config/extension.dart';
 import 'package:event_app/features/auth/presentation/bloc/auth_bloc.dart';
+import 'package:event_app/features/cart/presentation/bloc/cart_bloc.dart';
 import 'package:event_app/features/event/domain/entity/event.dart';
 import 'package:event_app/features/home/presentation/bloc/home_bloc.dart';
 import 'package:flutter/material.dart';
@@ -16,15 +17,14 @@ class HomeScreen extends StatefulWidget {
 
 class _HomeScreenState extends State<HomeScreen> {
   late final AuthBloc _authBloc = context.read<AuthBloc>();
+  late final CartBloc _cartBloc = context.read<CartBloc>();
   final ValueNotifier<int> _currentBannerPage = ValueNotifier<int>(0);
 
   @override
   void initState() {
     super.initState();
 
-    context.read<HomeBloc>().add(
-      FetchHomeEndpointEvent(user: _authBloc.state.user),
-    );
+    context.read<HomeBloc>().add(FetchHomeEndpointEvent(user: _authBloc.state.user));
   }
 
   @override
@@ -34,17 +34,11 @@ class _HomeScreenState extends State<HomeScreen> {
         type: BottomNavigationBarType.fixed,
         items: const [
           BottomNavigationBarItem(icon: Icon(Icons.home), label: 'Home'),
-          BottomNavigationBarItem(
-            icon: Icon(Icons.abc_sharp),
-            label: 'ABC Sharp',
-          ),
-          BottomNavigationBarItem(
-            icon: Icon(Icons.zoom_out_rounded),
-            label: 'Zoom Out',
-          ),
+          BottomNavigationBarItem(icon: Icon(Icons.abc_sharp), label: 'ABC Sharp'),
+          BottomNavigationBarItem(icon: Icon(Icons.zoom_out_rounded), label: 'Zoom Out'),
           BottomNavigationBarItem(icon: Icon(Icons.settings), label: 'Profile'),
         ],
-        currentIndex: 0, // indeks yang sedang aktif
+        currentIndex: 0,
         selectedItemColor: Colors.blue,
         unselectedItemColor: Colors.grey,
         onTap: (index) {
@@ -84,18 +78,8 @@ class _HomeScreenState extends State<HomeScreen> {
         crossAxisAlignment: CrossAxisAlignment.end,
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: [
-          Text(
-            'Popular Events',
-            style: context.text.titleLarge?.copyWith(
-              fontWeight: FontWeight.bold,
-            ),
-          ),
-          Text(
-            'See more',
-            style: context.text.bodySmall?.copyWith(
-              color: context.disableColor,
-            ),
-          ),
+          Text('Popular Events', style: context.text.titleLarge?.copyWith(fontWeight: FontWeight.bold)),
+          Text('See more', style: context.text.bodySmall?.copyWith(color: context.disableColor)),
         ],
       ),
       SizedBox(height: 16),
@@ -118,50 +102,27 @@ class _HomeScreenState extends State<HomeScreen> {
 
   Widget _buildEventItem(Event event) {
     return GestureDetector(
-      onTap:
-          () => Navigator.of(
-            context,
-          ).pushNamed(Constant.routeEventDetail, arguments: {'event': event}),
+      onTap: () => Navigator.of(context).pushNamed(Constant.routeEventDetail, arguments: {'event': event}),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Container(
             decoration: BoxDecoration(
               color: Colors.white,
-              border: Border.all(
-                color: Colors.grey.shade200,
-                width: 1.5,
-                style: BorderStyle.solid,
-              ),
+              border: Border.all(color: Colors.grey.shade200, width: 1.5, style: BorderStyle.solid),
               borderRadius: BorderRadius.circular(4),
-              boxShadow: [
-                BoxShadow(
-                  color: Colors.black.withOpacity(0.05),
-                  blurRadius: 6,
-                  offset: const Offset(0, 8),
-                ),
-              ],
+              boxShadow: [BoxShadow(color: Colors.black.withOpacity(0.05), blurRadius: 6, offset: const Offset(0, 8))],
             ),
             child: ClipRRect(
-              borderRadius: const BorderRadius.vertical(
-                top: Radius.circular(4),
-                bottom: Radius.circular(4),
-              ),
-              child: Image.network(
-                event.banner,
-                height: context.dh * 0.24,
-                width: double.infinity,
-                fit: BoxFit.cover,
-              ),
+              borderRadius: const BorderRadius.vertical(top: Radius.circular(4), bottom: Radius.circular(4)),
+              child: Image.network(event.banner, height: context.dh * 0.24, width: double.infinity, fit: BoxFit.cover),
             ),
           ),
           const SizedBox(height: 8),
           SizedBox(
             child: Text(
               event.name,
-              style: context.text.bodyMedium?.copyWith(
-                fontWeight: FontWeight.bold,
-              ),
+              style: context.text.bodyMedium?.copyWith(fontWeight: FontWeight.bold),
               maxLines: 2,
               overflow: TextOverflow.ellipsis,
             ),
@@ -179,35 +140,47 @@ class _HomeScreenState extends State<HomeScreen> {
         Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Text(
-              'Hello,',
-              style: context.text.bodyMedium?.copyWith(
-                color: context.hintColor,
-              ),
-            ),
+            Text('Hello,', style: context.text.bodyMedium?.copyWith(color: context.hintColor)),
             Text(
               _authBloc.state.user?.fullname.toUpperCase() ?? '',
-              style: context.text.titleLarge?.copyWith(
-                fontWeight: FontWeight.w500,
-              ),
+              style: context.text.titleLarge?.copyWith(fontWeight: FontWeight.w500),
             ),
           ],
         ),
 
-        Image.network(
-          'https://avatar.iran.liara.run/public/girl',
-          width: 50,
-          height: 50,
-          fit: BoxFit.cover,
-          alignment: Alignment.center,
-          errorBuilder: (context, error, stackTrace) {
-            return Container(
-              width: 50,
-              height: 50,
-              color: Colors.grey[200],
-              child: const Icon(Icons.person, color: Colors.grey),
-            );
-          },
+        Stack(
+          clipBehavior: Clip.none,
+          children: [
+            Container(
+              decoration: BoxDecoration(color: Colors.grey.shade200, borderRadius: BorderRadius.circular(16)),
+              child: IconButton(
+                onPressed: () => Navigator.of(context).pushNamed(Constant.routeCart),
+                icon: Icon(Icons.shopping_bag_outlined, color: Colors.black87),
+              ),
+            ),
+
+            BlocSelector<CartBloc, CartState, CartState>(
+              selector: (state) => state,
+              builder: (context, state) {
+                print('state: ${state.totalCart}');
+                if (state.totalCart == 0) return SizedBox.shrink();
+
+                return Positioned(
+                  top: -2,
+                  right: -2,
+                  child: Container(
+                    padding: const EdgeInsets.all(6),
+                    alignment: Alignment.topCenter,
+                    decoration: BoxDecoration(color: context.primaryColor, shape: BoxShape.circle),
+                    child: Text(
+                      state.totalCart.toString(),
+                      style: TextStyle(color: Colors.white, fontSize: 8, fontWeight: FontWeight.bold),
+                    ),
+                  ),
+                );
+              },
+            ),
+          ],
         ),
       ],
     );
@@ -233,23 +206,13 @@ class _HomeScreenState extends State<HomeScreen> {
                               if (loadingProgress == null) return child;
                               return Container(
                                 color: Colors.grey.shade200,
-                                child: const Center(
-                                  child: CircularProgressIndicator(
-                                    strokeWidth: 2,
-                                  ),
-                                ),
+                                child: const Center(child: CircularProgressIndicator(strokeWidth: 2)),
                               );
                             },
                             errorBuilder: (context, error, stackTrace) {
                               return Container(
                                 color: Colors.grey.shade200,
-                                child: const Center(
-                                  child: Icon(
-                                    Icons.broken_image,
-                                    size: 40,
-                                    color: Colors.grey,
-                                  ),
-                                ),
+                                child: const Center(child: Icon(Icons.broken_image, size: 40, color: Colors.red)),
                               );
                             },
                           ),
@@ -290,10 +253,7 @@ class _HomeScreenState extends State<HomeScreen> {
                   margin: const EdgeInsets.symmetric(horizontal: 4),
                   decoration: BoxDecoration(
                     shape: BoxShape.circle,
-                    color:
-                        value == index
-                            ? context.primaryColor
-                            : Colors.grey.shade300,
+                    color: value == index ? context.primaryColor : Colors.grey.shade300,
                   ),
                 ),
               ),

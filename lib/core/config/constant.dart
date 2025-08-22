@@ -5,4 +5,5 @@ class Constant {
   static const String routeEvent = '/event';
   static const String routeEventDetail = '/detail-event';
   static const String routeOrderSummary = '/payment';
+  static const String routeCart = '/cart';
 }

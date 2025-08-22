@@ -2,6 +2,7 @@ import 'package:event_app/core/config/constant.dart';
 import 'package:event_app/core/config/global.dart';
 import 'package:event_app/features/auth/presentation/screen/login_screen.dart';
 import 'package:event_app/features/auth/presentation/screen/register_screen.dart';
+import 'package:event_app/features/cart/presentation/screen/cart_screen.dart';
 import 'package:event_app/features/event/presentation/screen/detail_event_screen.dart';
 import 'package:event_app/features/event/presentation/screen/event_screen.dart';
 import 'package:event_app/features/home/presentation/screen/home_screen.dart';
@@ -35,7 +36,10 @@ class MyRouter {
         screenTujuan = (_) => DetailEventScreen(event: arguments?['event']);
         break;
       case Constant.routeOrderSummary:
-        screenTujuan = (_) => OrderSummary(order: arguments?['order']);
+        screenTujuan = (_) => OrderSummaryScreen(order: arguments?['order']);
+        break;
+      case Constant.routeCart:
+        screenTujuan = (_) => CartScreen();
         break;
       default:
         screenTujuan = (_) => LoginScreen();

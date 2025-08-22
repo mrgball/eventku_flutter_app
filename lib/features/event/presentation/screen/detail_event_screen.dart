@@ -1,10 +1,13 @@
 import 'package:event_app/core/config/constant.dart';
 import 'package:event_app/core/config/extension.dart';
+import 'package:event_app/features/cart/domain/entity/cart_item.dart';
+import 'package:event_app/features/cart/presentation/bloc/cart_bloc.dart';
 import 'package:event_app/features/event/domain/entity/event.dart';
 import 'package:event_app/features/event/domain/entity/ticket.dart';
 import 'package:event_app/features/event/presentation/widget/ticket_container.dart';
 import 'package:event_app/features/payment/domain/entity/order.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 
 class DetailEventScreen extends StatefulWidget {
   final Event event;
@@ -26,29 +29,24 @@ class _DetailEventScreenState extends State<DetailEventScreen> {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            SafeArea(
-              child: Stack(
-                children: [
-                  ClipRRect(
-                    child: Image.network(
-                      widget.event.banner,
-                      width: double.infinity,
-                      height: 250,
-                      fit: BoxFit.cover,
+            GestureDetector(
+              onTap: () => Navigator.of(context).pop(),
+              child: SafeArea(
+                child: Stack(
+                  children: [
+                    ClipRRect(
+                      child: Image.network(widget.event.banner, width: double.infinity, height: 250, fit: BoxFit.cover),
                     ),
-                  ),
-                  Positioned(
-                    top: 16,
-                    left: 16,
-                    child: CircleAvatar(
-                      backgroundColor: Colors.grey.withOpacity(0.5),
-                      child: IconButton(
-                        icon: Icon(Icons.chevron_left, color: Colors.white),
-                        onPressed: () => Navigator.of(context).pop(),
+                    Positioned(
+                      top: 16,
+                      left: 16,
+                      child: CircleAvatar(
+                        backgroundColor: Colors.grey.withOpacity(0.5),
+                        child: Icon(Icons.chevron_left, color: Colors.white),
                       ),
                     ),
-                  ),
-                ],
+                  ],
+                ),
               ),
             ),
             Padding(
@@ -56,19 +54,9 @@ class _DetailEventScreenState extends State<DetailEventScreen> {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  Text(
-                    widget.event.name,
-                    style: context.text.headlineSmall?.copyWith(
-                      fontWeight: FontWeight.bold,
-                    ),
-                  ),
+                  Text(widget.event.name, style: context.text.headlineSmall?.copyWith(fontWeight: FontWeight.bold)),
                   SizedBox(height: 32),
-                  Text(
-                    'About This Event',
-                    style: context.text.titleMedium?.copyWith(
-                      fontWeight: FontWeight.w500,
-                    ),
-                  ),
+                  Text('About This Event', style: context.text.titleMedium?.copyWith(fontWeight: FontWeight.w500)),
                   SizedBox(height: 12),
 
                   _buildExpandText(widget.event.description),
@@ -104,68 +92,62 @@ class _DetailEventScreenState extends State<DetailEventScreen> {
             children: [
               Text(
                 ticket.name,
-                style: context.text.headlineSmall?.copyWith(
-                  color: Colors.deepPurple,
-                  fontWeight: FontWeight.bold,
-                ),
+                style: context.text.headlineSmall?.copyWith(color: context.onBackground, fontWeight: FontWeight.bold),
               ),
-              Text(
-                ticket.price.displayRupiah,
-                style: context.text.titleMedium?.copyWith(
-                  color: context.onBackground,
-                ),
-              ),
+              Text(ticket.price.displayRupiah, style: context.text.titleMedium?.copyWith(color: context.onBackground)),
             ],
           ),
           bottomChild: Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
-              Text(
-                'SISA ${ticket.quantity} TICKET',
-                style: context.text.titleSmall?.copyWith(
-                  color: context.disableColor,
+              OutlinedButton.icon(
+                onPressed:
+                    () => context.read<CartBloc>().add(
+                      AddToCartEvent(
+                        CartItem(
+                          quantity: 1,
+                          idEvent: widget.event.id,
+                          idTicket: ticket.id,
+                          name: widget.event.name,
+                          price: ticket.price,
+                          ticketName: ticket.name,
+                        ),
+                      ),
+                    ),
+                style: OutlinedButton.styleFrom(
+                  padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+                  side: const BorderSide(color: Colors.deepPurple, width: 1),
+                  shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+                ),
+                icon: const Icon(Icons.shopping_bag_outlined, color: Colors.deepPurple, size: 18),
+                label: Text(
+                  'Add to cart',
+                  style: context.text.bodyMedium?.copyWith(color: Colors.deepPurple, fontWeight: FontWeight.bold),
                 ),
               ),
-              OutlinedButton(
+              const SizedBox(width: 12),
+
+              ElevatedButton.icon(
                 onPressed:
                     () => Navigator.of(context).pushNamed(
                       Constant.routeOrderSummary,
-                      arguments: {
-                        'order': Order(
-                          event: widget.event,
-                          ticket: ticket,
-                          quantity: 1,
-                        ),
-                      },
+                      arguments: {'order': Order(event: widget.event, ticket: ticket, quantity: 1)},
                     ),
-                style: OutlinedButton.styleFrom(
-                  padding: const EdgeInsets.symmetric(
-                    horizontal: 16,
-                    vertical: 8,
-                  ),
-                  side: BorderSide(color: Colors.deepPurple, width: 1),
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: Colors.deepPurple,
+                  foregroundColor: Colors.white,
+                  padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 8),
+                  shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
                 ),
-                child: Row(
-                  mainAxisSize: MainAxisSize.min,
-                  children: [
-                    Text(
-                      'Buy Now',
-                      style: context.text.bodyMedium?.copyWith(
-                        color: Colors.deepPurple,
-                        fontWeight: FontWeight.bold,
-                      ),
-                    ),
-                    const SizedBox(width: 18),
-                    const Icon(
-                      Icons.chevron_right,
-                      size: 20,
-                      color: Colors.deepPurple,
-                    ),
-                  ],
+                icon: const Icon(Icons.flash_on, size: 18, color: Colors.white),
+                label: Text(
+                  'Buy Now',
+                  style: context.text.bodyMedium?.copyWith(fontWeight: FontWeight.bold, color: Colors.white),
                 ),
               ),
             ],
           ),
+
           dashColor: context.disableColor,
         );
       },
@@ -183,9 +165,7 @@ class _DetailEventScreenState extends State<DetailEventScreen> {
               text,
               maxLines: value ? null : 3,
               overflow: value ? TextOverflow.visible : TextOverflow.ellipsis,
-              style: context.text.bodyMedium?.copyWith(
-                color: context.disableColor,
-              ),
+              style: context.text.bodyMedium?.copyWith(color: context.disableColor),
             ),
             SizedBox(height: 4),
 
@@ -194,10 +174,7 @@ class _DetailEventScreenState extends State<DetailEventScreen> {
                 onTap: () {
                   _isExpandText.value = !_isExpandText.value;
                 },
-                child: const Text(
-                  'Show More',
-                  style: TextStyle(color: Colors.deepPurple),
-                ),
+                child: const Text('Show More', style: TextStyle(color: Colors.deepPurple)),
               ),
             SizedBox(height: 4),
 
@@ -206,10 +183,7 @@ class _DetailEventScreenState extends State<DetailEventScreen> {
                 onTap: () {
                   _isExpandText.value = false;
                 },
-                child: const Text(
-                  'Show Less',
-                  style: TextStyle(color: Colors.deepPurple),
-                ),
+                child: const Text('Show Less', style: TextStyle(color: Colors.deepPurple)),
               ),
           ],
         );

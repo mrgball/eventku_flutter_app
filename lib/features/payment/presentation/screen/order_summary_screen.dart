@@ -6,10 +6,10 @@ import 'package:event_app/features/payment/presentation/bloc/payment_bloc.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
-class OrderSummary extends StatelessWidget {
+class OrderSummaryScreen extends StatelessWidget {
   final Order order;
 
-  const OrderSummary({super.key, required this.order});
+  const OrderSummaryScreen({super.key, required this.order});
 
   @override
   Widget build(BuildContext context) {
@@ -17,19 +17,14 @@ class OrderSummary extends StatelessWidget {
       backgroundColor: Colors.blueGrey.shade50,
       appBar: AppBar(
         backgroundColor: Colors.blueGrey.shade50,
-        title: Text(
-          "Order Summary",
-          style: context.text.titleLarge?.copyWith(fontWeight: FontWeight.bold),
-        ),
+        title: Text("Order Summary", style: context.text.titleLarge?.copyWith(fontWeight: FontWeight.bold)),
       ),
       body: SafeArea(
         child: Column(
           children: [
             Card(
               margin: const EdgeInsets.all(16),
-              shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(12),
-              ),
+              shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
               child: Padding(
                 padding: const EdgeInsets.all(16),
                 child: Column(
@@ -60,10 +55,7 @@ class OrderSummary extends StatelessWidget {
 
             Padding(
               padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 16),
-              child: CustomButton(
-                title: 'Bayar Sekarang',
-                onPressed: () => _startPayment(context),
-              ),
+              child: CustomButton(title: 'Bayar Sekarang', onPressed: () => _startPayment(context)),
             ),
           ],
         ),
@@ -77,10 +69,7 @@ class OrderSummary extends StatelessWidget {
       physics: const NeverScrollableScrollPhysics(),
       itemCount: orders.length,
       separatorBuilder:
-          (context, index) => Padding(
-            padding: EdgeInsets.symmetric(vertical: 12),
-            child: const Divider(height: 1),
-          ),
+          (context, index) => Padding(padding: EdgeInsets.symmetric(vertical: 12), child: const Divider(height: 1)),
       itemBuilder: (context, index) {
         final order = orders[index];
 
@@ -92,21 +81,14 @@ class OrderSummary extends StatelessWidget {
               Container(
                 height: 70,
                 width: 70,
-                decoration: BoxDecoration(
-                  borderRadius: BorderRadius.circular(16),
-                ),
+                decoration: BoxDecoration(borderRadius: BorderRadius.circular(16)),
                 child: Image.network(order.event.banner, fit: BoxFit.cover),
               ),
               const SizedBox(width: 12),
               Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  Text(
-                    order.event.name,
-                    style: context.text.bodyMedium?.copyWith(
-                      fontWeight: FontWeight.bold,
-                    ),
-                  ),
+                  Text(order.event.name, style: context.text.bodyMedium?.copyWith(fontWeight: FontWeight.bold)),
                   const SizedBox(height: 2),
                   Text('qty: ${order.quantity}', style: context.text.bodySmall),
                 ],
@@ -119,12 +101,7 @@ class OrderSummary extends StatelessWidget {
     );
   }
 
-  Widget _orderRow(
-    BuildContext context, {
-    required Widget child,
-    required String value,
-    bool isSubtotal = false,
-  }) {
+  Widget _orderRow(BuildContext context, {required Widget child, required String value, bool isSubtotal = false}) {
     if (isSubtotal) {
       return Padding(
         padding: const EdgeInsets.symmetric(vertical: 4),
@@ -149,25 +126,14 @@ class OrderSummary extends StatelessWidget {
       padding: const EdgeInsets.symmetric(vertical: 4),
       child: Row(
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
-        children: [
-          child,
-          Text(value, style: context.text.bodyLarge?.copyWith(fontSize: 14)),
-        ],
+        children: [child, Text(value, style: context.text.bodyLarge?.copyWith(fontSize: 14))],
       ),
     );
   }
 
   void _startPayment(BuildContext context) {
     context.read<PaymentBloc>().add(
-      CreateOrderEvent(
-        orders: [
-          CreateOrderDto(
-            idEvent: order.ticket.eventId,
-            qty: 1,
-            idTicket: order.ticket.id,
-          ),
-        ],
-      ),
+      CreateOrderEvent(orders: [CreateOrderDto(idEvent: order.ticket.eventId, qty: 1, idTicket: order.ticket.id)]),
     );
   }
 }
