@@ -17,7 +17,6 @@ class HomeScreen extends StatefulWidget {
 
 class _HomeScreenState extends State<HomeScreen> {
   late final AuthBloc _authBloc = context.read<AuthBloc>();
-  late final CartBloc _cartBloc = context.read<CartBloc>();
   final ValueNotifier<int> _currentBannerPage = ValueNotifier<int>(0);
 
   @override
@@ -33,13 +32,13 @@ class _HomeScreenState extends State<HomeScreen> {
       bottomNavigationBar: BottomNavigationBar(
         type: BottomNavigationBarType.fixed,
         items: const [
-          BottomNavigationBarItem(icon: Icon(Icons.home), label: 'Home'),
+          BottomNavigationBarItem(icon: Icon(Icons.home, size: 20), label: 'Home'),
           BottomNavigationBarItem(icon: Icon(Icons.abc_sharp), label: 'ABC Sharp'),
           BottomNavigationBarItem(icon: Icon(Icons.zoom_out_rounded), label: 'Zoom Out'),
           BottomNavigationBarItem(icon: Icon(Icons.settings), label: 'Profile'),
         ],
         currentIndex: 0,
-        selectedItemColor: Colors.blue,
+        selectedItemColor: context.primaryColor,
         unselectedItemColor: Colors.grey,
         onTap: (index) {
           // fungsi saat icon ditekan, misal update state
@@ -162,7 +161,6 @@ class _HomeScreenState extends State<HomeScreen> {
             BlocSelector<CartBloc, CartState, CartState>(
               selector: (state) => state,
               builder: (context, state) {
-                print('state: ${state.totalCart}');
                 if (state.totalCart == 0) return SizedBox.shrink();
 
                 return Positioned(

@@ -19,11 +19,11 @@ class CartService {
     return _database!;
   }
 
-  Future<Database> _initDB(String filePath) async {
+  Future<Database> _initDB(String filePath, {bool isDeleteDB = false}) async {
     final dbPath = await getDatabasesPath();
     final path = join(dbPath, filePath);
 
-    await deleteDatabase(path);
+    if (isDeleteDB) await deleteDatabase(path);
 
     return await openDatabase(
       path,
@@ -32,12 +32,14 @@ class CartService {
         await db.execute('''
           CREATE TABLE cart(
             id INTEGER PRIMARY KEY AUTOINCREMENT,
+            user_id TEXT,
             event_id TEXT,
             ticket_id TEXT,
             name TEXT,
             ticket_name TEXT,
             price INTEGER,
-            quantity INTEGER
+            quantity INTEGER,
+            UNIQUE(user_id, ticket_id)
           )
         ''');
       },
@@ -46,10 +48,15 @@ class CartService {
 
   /// Tambahkan item ke cart, update qty kalau ticket_id sudah ada
   Future<int> addToCart(CartItem item) async {
+    print('add to cart: ');
     final db = await database;
 
     // cek apakah sudah ada item dengan ticket_id ini
-    final existing = await db.query('cart', where: 'ticket_id = ?', whereArgs: [item.idTicket]);
+    final existing = await db.query(
+      'cart',
+      where: 'user_id = ? AND ticket_id = ?',
+      whereArgs: [item.idUser, item.idTicket],
+    );
 
     if (existing.isNotEmpty) {
       // update qty
@@ -57,12 +64,13 @@ class CartService {
       return await db.update(
         'cart',
         {'quantity': currentQty + item.quantity},
-        where: 'ticket_id = ?',
-        whereArgs: [item.idTicket],
+        where: 'user_id = ? AND ticket_id = ?',
+        whereArgs: [item.idUser, item.idTicket],
       );
     } else {
       // insert baru
       return await db.insert('cart', {
+        'user_id': item.idUser,
         'event_id': item.idEvent,
         'ticket_id': item.idTicket,
         'name': item.name,
@@ -73,11 +81,24 @@ class CartService {
     }
   }
 
+  Future<int> updateCartQuantity(String userId, String ticketId, int newQuantity) async {
+    final db = await database;
+
+    if (newQuantity <= 0) {
+      return await db.delete('cart', where: 'user_id = ? AND ticket_id = ?', whereArgs: [userId, ticketId]);
+    }
+
+    return await db.update(
+      'cart',
+      {'quantity': newQuantity}, // Set ke nilai baru langsung
+      where: 'user_id = ? AND ticket_id = ?',
+      whereArgs: [userId, ticketId],
+    );
+  }
+
   Future<List<CartItem>> getCartItems() async {
     final db = await database;
     final listCart = await db.query('cart');
-
-    print('list cart: $listCart');
 
     return listCart.map((cart) => CartItemModel.fromJson(cart)).toList();
   }

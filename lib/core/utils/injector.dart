@@ -1,3 +1,4 @@
+import 'package:event_app/core/helper/cart_service.dart';
 import 'package:event_app/core/helper/dio_helper.dart';
 import 'package:event_app/core/helper/storage_service.dart';
 import 'package:event_app/features/auth/data/repository/auth_repository_impl.dart';
@@ -17,35 +18,23 @@ void initInjector() async {
   locator.registerSingleton<DioHelper>(DioHelper(isTransaction: false));
 
   // Base URL khusus transaksi Midtrans
-  locator.registerSingleton<DioHelper>(
-    DioHelper(isTransaction: true),
-    instanceName: "transaction",
-  );
+  locator.registerSingleton<DioHelper>(DioHelper(isTransaction: true), instanceName: "transaction");
 
   // initialize storage service
   locator.registerSingleton<StorageService>(StorageService());
 
+  // initialize cart service
+  locator.registerSingleton<CartService>(CartService());
+
   //REPOSITORY
   locator.registerLazySingleton<AuthRepository>(() => AuthRepositoryImpl());
   locator.registerLazySingleton<HomeRepository>(() => HomeRepositoryImpl());
-  locator.registerLazySingleton<PaymentRepository>(
-    () => PaymentRepositoryImpl(),
-  );
+  locator.registerLazySingleton<PaymentRepository>(() => PaymentRepositoryImpl());
 
   //USECASE
-  locator.registerLazySingleton<RegisterAccountUseCase>(
-    () => RegisterAccountUseCase(locator()),
-  );
-  locator.registerLazySingleton<LoginAccountUseCase>(
-    () => LoginAccountUseCase(locator()),
-  );
-  locator.registerLazySingleton<FetchBannerUseCase>(
-    () => FetchBannerUseCase(locator()),
-  );
-  locator.registerLazySingleton<FetchPopularEventsUseCase>(
-    () => FetchPopularEventsUseCase(locator()),
-  );
-  locator.registerLazySingleton<CreateOrderUseCase>(
-    () => CreateOrderUseCase(locator()),
-  );
+  locator.registerLazySingleton<RegisterAccountUseCase>(() => RegisterAccountUseCase(locator()));
+  locator.registerLazySingleton<LoginAccountUseCase>(() => LoginAccountUseCase(locator()));
+  locator.registerLazySingleton<FetchBannerUseCase>(() => FetchBannerUseCase(locator()));
+  locator.registerLazySingleton<FetchPopularEventsUseCase>(() => FetchPopularEventsUseCase(locator()));
+  locator.registerLazySingleton<CreateOrderUseCase>(() => CreateOrderUseCase(locator()));
 }

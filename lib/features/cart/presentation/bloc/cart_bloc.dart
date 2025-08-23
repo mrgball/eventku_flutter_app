@@ -21,6 +21,38 @@ class CartBloc extends Bloc<CartEvent, CartState> {
   CartBloc() : super(CartState()) {
     on<AddToCartEvent>(_onAddToCart);
     on<GetCartEvent>(_onGetCart);
+    on<UpdateTicketQtyEvent>(_onUpdateTicketQty);
+  }
+
+  void _onUpdateTicketQty(UpdateTicketQtyEvent event, Emitter<CartState> emit) async {
+    var completer = Completer();
+
+    try {
+      gNavigatorKey.currentContext!.showBlockDialog(completer: completer);
+
+      await Future.delayed(Duration(milliseconds: 1000));
+
+      await _cartService.updateCartQuantity(event.userId, event.ticketId, event.quantity);
+
+      final updatedGroupedCart = _updateGroupedCartQuantity(
+        state.groupedCart,
+        event.userId,
+        event.ticketId,
+        isIncrement: event.isIncrement,
+      );
+
+      emit(state.copyWith(groupedCart: updatedGroupedCart));
+
+      if (!completer.isCompleted) {
+        completer.complete();
+      }
+    } catch (e) {
+      add(GetCartEvent());
+
+      if (!completer.isCompleted) {
+        completer.complete();
+      }
+    }
   }
 
   void _onGetCart(GetCartEvent event, Emitter<CartState> emit) async {
@@ -29,9 +61,24 @@ class CartBloc extends Bloc<CartEvent, CartState> {
 
       final response = await _cartService.getCartItems();
 
-      emit(state.copyWith(status: BlocStatus.success, listCart: response));
-    } catch (e) {
-      emit(state.copyWith(status: BlocStatus.success, listCart: []));
+      print('response cart: $response');
+
+      final Map<String, List<CartItem>> groupedCart = {};
+
+      for (var cart in response) {
+        final eventName = cart.name;
+
+        if (groupedCart.containsKey(eventName)) {
+          groupedCart[eventName]!.add(cart);
+        } else {
+          groupedCart[eventName] = [cart];
+        }
+      }
+
+      emit(state.copyWith(status: BlocStatus.success, listCart: response, groupedCart: groupedCart));
+    } catch (e, s) {
+      print('error pas pertama:$e \n $s');
+      emit(state.copyWith(status: BlocStatus.success, listCart: [], groupedCart: {}));
     }
   }
 
@@ -43,35 +90,13 @@ class CartBloc extends Bloc<CartEvent, CartState> {
 
       await _cartService.addToCart(event.order);
 
-      final existingCart = List<CartItem>.from(state.listCart);
-
-      final index = existingCart.indexWhere((item) => item.idTicket == event.order.idTicket);
-
-      if (index != -1) {
-        existingCart[index] = existingCart[index].copyWith(
-          quantity: existingCart[index].quantity + event.order.quantity,
-        );
-      } else {
-        existingCart.add(
-          CartItem(
-            idEvent: event.order.idEvent,
-            name: event.order.name,
-            price: event.order.price,
-            quantity: event.order.quantity,
-            ticketName: event.order.ticketName,
-            idTicket: event.order.idTicket,
-          ),
-        );
-      }
-
-      emit(state.copyWith(listCart: existingCart));
-
       await Future.delayed(const Duration(milliseconds: 1000));
 
       showToast(
         context: gNavigatorKey.currentContext!,
         message: 'Success add your item to cart',
         type: ToastificationType.success,
+        duration: Duration(seconds: 2),
       );
 
       if (!completer.isCompleted) {
@@ -84,11 +109,45 @@ class CartBloc extends Bloc<CartEvent, CartState> {
         context: gNavigatorKey.currentContext!,
         message: 'Failed to add your item to cart',
         type: ToastificationType.error,
+        duration: Duration(seconds: 2),
       );
     } finally {
       if (!completer.isCompleted) {
         completer.complete();
       }
     }
+  }
+
+  Map<String, List<CartItem>> _updateGroupedCartQuantity(
+    Map<String, List<CartItem>> currentGroupedCart,
+    String userId,
+    String ticketId, {
+    bool isIncrement = true,
+  }) {
+    final updatedGroupedCart = <String, List<CartItem>>{};
+
+    for (final entry in currentGroupedCart.entries) {
+      final eventName = entry.key;
+      final items = entry.value;
+      final updatedItems = <CartItem>[];
+
+      for (final item in items) {
+        if (item.idUser == userId && item.idTicket == ticketId) {
+          final newQuantity = (isIncrement) ? item.quantity + 1 : item.quantity - 1;
+
+          if (newQuantity > 0) {
+            updatedItems.add(item.copyWith(quantity: newQuantity));
+          }
+        } else {
+          updatedItems.add(item);
+        }
+      }
+
+      if (updatedItems.isNotEmpty) {
+        updatedGroupedCart[eventName] = updatedItems;
+      }
+    }
+
+    return updatedGroupedCart;
   }
 }

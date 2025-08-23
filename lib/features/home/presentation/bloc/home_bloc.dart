@@ -18,6 +18,7 @@ import 'package:event_app/core/config/enum.dart';
 import 'package:toastification/toastification.dart';
 
 part 'home_event.dart';
+
 part 'home_state.dart';
 
 class HomeBloc extends Bloc<HomeEvent, HomeState> {
@@ -30,10 +31,7 @@ class HomeBloc extends Bloc<HomeEvent, HomeState> {
     on<FetchHomeEndpointEvent>(_onFetchHomeEndpoint);
   }
 
-  void _onFetchHomeEndpoint(
-    FetchHomeEndpointEvent event,
-    Emitter<HomeState> emit,
-  ) async {
+  void _onFetchHomeEndpoint(FetchHomeEndpointEvent event, Emitter<HomeState> emit) async {
     var completer = Completer();
 
     try {
@@ -41,6 +39,10 @@ class HomeBloc extends Bloc<HomeEvent, HomeState> {
 
       add(FetchBannerEvent(user: event.user));
       add(FetchPopularEvent(user: event.user));
+
+      if (!completer.isCompleted) {
+        completer.complete();
+      }
     } catch (e) {
       showToast(
         context: gNavigatorKey.currentContext!,
@@ -59,22 +61,14 @@ class HomeBloc extends Bloc<HomeEvent, HomeState> {
     }
   }
 
-  void _onFetchPopularEvents(
-    FetchPopularEvent event,
-    Emitter<HomeState> emit,
-  ) async {
+  void _onFetchPopularEvents(FetchPopularEvent event, Emitter<HomeState> emit) async {
     String key = event.user?.id ?? '';
 
     try {
       emit(state.copyWith(eventStatus: BlocStatus.loading));
 
       if (!event.isRefresh && _cacheListPopularEvent.containsKey(key)) {
-        emit(
-          state.copyWith(
-            eventStatus: BlocStatus.success,
-            listPopularEvent: _cacheListPopularEvent[key],
-          ),
-        );
+        emit(state.copyWith(eventStatus: BlocStatus.success, listPopularEvent: _cacheListPopularEvent[key]));
         return;
       }
 
@@ -84,17 +78,10 @@ class HomeBloc extends Bloc<HomeEvent, HomeState> {
         throw DataException(message: 'Data events tidak ditemukan');
       }
 
-      _cacheListPopularEvent[key] =
-          response.map((event) => EventModel.fromJson(event)).toList();
+      _cacheListPopularEvent[key] = response.map((event) => EventModel.fromJson(event)).toList();
 
-      emit(
-        state.copyWith(
-          eventStatus: BlocStatus.success,
-          listPopularEvent: _cacheListPopularEvent[key],
-        ),
-      );
-    } catch (e, s) {
-      print('err fetch popular events: $e \n $s');
+      emit(state.copyWith(eventStatus: BlocStatus.success, listPopularEvent: _cacheListPopularEvent[key]));
+    } catch (e) {
       emit(state.copyWith(eventStatus: BlocStatus.error, listPopularEvent: []));
     }
   }
@@ -106,32 +93,19 @@ class HomeBloc extends Bloc<HomeEvent, HomeState> {
       emit(state.copyWith(bannerStatus: BlocStatus.loading));
 
       if (!event.isRefresh && _cacheListBanner.containsKey(key)) {
-        emit(
-          state.copyWith(
-            bannerStatus: BlocStatus.success,
-            listBanner: _cacheListBanner[key],
-          ),
-        );
+        emit(state.copyWith(bannerStatus: BlocStatus.success, listBanner: _cacheListBanner[key]));
         return;
       }
 
-      final response = await locator<FetchBannerUseCase>().call(
-        params: {'limit': 10, 'page': 1},
-      );
+      final response = await locator<FetchBannerUseCase>().call(params: {'limit': 10, 'page': 1});
 
       if (response.isEmpty) {
         throw DataException(message: 'gagal fetch banner');
       }
 
-      _cacheListBanner[key] =
-          response.map<Banner>((item) => BannerModel.fromJson(item)).toList();
+      _cacheListBanner[key] = response.map<Banner>((item) => BannerModel.fromJson(item)).toList();
 
-      emit(
-        state.copyWith(
-          bannerStatus: BlocStatus.success,
-          listBanner: _cacheListBanner[key],
-        ),
-      );
+      emit(state.copyWith(bannerStatus: BlocStatus.success, listBanner: _cacheListBanner[key]));
     } on DataException catch (e, s) {
       print('error data except : $e \n $s');
 

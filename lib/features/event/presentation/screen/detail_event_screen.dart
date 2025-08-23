@@ -1,5 +1,6 @@
 import 'package:event_app/core/config/constant.dart';
 import 'package:event_app/core/config/extension.dart';
+import 'package:event_app/features/auth/presentation/bloc/auth_bloc.dart';
 import 'package:event_app/features/cart/domain/entity/cart_item.dart';
 import 'package:event_app/features/cart/presentation/bloc/cart_bloc.dart';
 import 'package:event_app/features/event/domain/entity/event.dart';
@@ -8,6 +9,8 @@ import 'package:event_app/features/event/presentation/widget/ticket_container.da
 import 'package:event_app/features/payment/domain/entity/order.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+
+import '../../../auth/domain/entity/user.dart';
 
 class DetailEventScreen extends StatefulWidget {
   final Event event;
@@ -20,6 +23,7 @@ class DetailEventScreen extends StatefulWidget {
 
 class _DetailEventScreenState extends State<DetailEventScreen> {
   final ValueNotifier<bool> _isExpandText = ValueNotifier(false);
+  late final User? _user = context.read<AuthBloc>().state.user;
 
   @override
   Widget build(BuildContext context) {
@@ -105,6 +109,7 @@ class _DetailEventScreenState extends State<DetailEventScreen> {
                     () => context.read<CartBloc>().add(
                       AddToCartEvent(
                         CartItem(
+                          idUser: _user?.id ?? '',
                           quantity: 1,
                           idEvent: widget.event.id,
                           idTicket: ticket.id,

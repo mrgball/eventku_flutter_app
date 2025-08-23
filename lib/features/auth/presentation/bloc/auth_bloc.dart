@@ -12,17 +12,22 @@ import 'package:event_app/core/utils/token_utils.dart';
 import 'package:event_app/features/auth/data/model/user_model.dart';
 import 'package:event_app/features/auth/domain/entity/user.dart';
 import 'package:event_app/features/auth/domain/usecase/auth_usecase.dart';
+import 'package:event_app/features/cart/presentation/bloc/cart_bloc.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:equatable/equatable.dart';
 import 'package:event_app/core/config/enum.dart';
 import 'package:toastification/toastification.dart';
 
+import '../../../../core/helper/cart_service.dart';
+
 part 'auth_event.dart';
+
 part 'auth_state.dart';
 
 class AuthBloc extends Bloc<AuthEvent, AuthState> {
   final _storageService = locator<StorageService>();
+  final _cartService = locator<CartService>();
 
   AuthBloc() : super(AuthState()) {
     on<RegisterAccountEvent>(_onRegisterAccount);
@@ -30,42 +35,28 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
     on<CheckLoginStatusEvent>(_onCheckLoginStatus);
   }
 
-  Future<void> _onCheckLoginStatus(
-    CheckLoginStatusEvent event,
-    Emitter<AuthState> emit,
-  ) async {
+  Future<void> _onCheckLoginStatus(CheckLoginStatusEvent event, Emitter<AuthState> emit) async {
     await Future.delayed(const Duration(seconds: 3));
 
     final token = await _storageService.getAccessToken();
     final user = await _storageService.getUser();
 
     if (!isTokenExpired(token) && user != null) {
+      gNavigatorKey.currentContext!.read<CartBloc>().add(GetCartEvent());
+
       gUser = user;
 
       emit(state.copyWith(status: BlocStatus.success, user: user));
 
-      Navigator.pushReplacementNamed(
-        gNavigatorKey.currentContext!,
-        Constant.routeHome,
-      );
+      Navigator.pushReplacementNamed(gNavigatorKey.currentContext!, Constant.routeHome);
     } else {
       emit(state.copyWith(status: BlocStatus.success, user: null));
 
-      final message =
-          isTokenExpired(token)
-              ? 'Sesi Anda telah berakhir, silakan login kembali.'
-              : 'Anda belum login.';
+      final message = isTokenExpired(token) ? 'Sesi Anda telah berakhir, silakan login kembali.' : 'Anda belum login.';
 
-      showToast(
-        context: gNavigatorKey.currentContext!,
-        message: message,
-        type: ToastificationType.error,
-      );
+      showToast(context: gNavigatorKey.currentContext!, message: message, type: ToastificationType.error);
 
-      Navigator.pushReplacementNamed(
-        gNavigatorKey.currentContext!,
-        Constant.routeLogin,
-      );
+      Navigator.pushReplacementNamed(gNavigatorKey.currentContext!, Constant.routeLogin);
     }
   }
 
@@ -91,6 +82,10 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
 
       //save user
       await _storageService.saveUser(UserModel.fromJson(response['user']));
+
+      final cartItems = _cartService.getCartItems();
+
+      print('cart items: $cartItems');
 
       // 2. Simpan user ke model (opsional, tergantung kamu pakai bloc/cubit/state mgmt apa)
       emit(state.copyWith(user: UserModel.fromJson(response['user'])));
@@ -120,13 +115,7 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
         type: ToastificationType.error,
         style: ToastificationStyle.flatColored,
       );
-      emit(
-        state.copyWith(
-          message: e.message,
-          errMessage: e.errMessage,
-          errorCode: e.errorCode,
-        ),
-      );
+      emit(state.copyWith(message: e.message, errMessage: e.errMessage, errorCode: e.errorCode));
     } catch (e, s) {
       print('error data except: $e \n $s');
 
@@ -144,10 +133,7 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
     }
   }
 
-  void _onRegisterAccount(
-    RegisterAccountEvent event,
-    Emitter<AuthState> emit,
-  ) async {
+  void _onRegisterAccount(RegisterAccountEvent event, Emitter<AuthState> emit) async {
     var completer = Completer();
 
     try {
@@ -181,13 +167,7 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
         style: ToastificationStyle.flatColored,
       );
 
-      emit(
-        state.copyWith(
-          message: e.message,
-          errMessage: e.errMessage,
-          errorCode: e.errorCode,
-        ),
-      );
+      emit(state.copyWith(message: e.message, errMessage: e.errMessage, errorCode: e.errorCode));
     } catch (e) {
       showToast(
         context: gNavigatorKey.currentContext!,
